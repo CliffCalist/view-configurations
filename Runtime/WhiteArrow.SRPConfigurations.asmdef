@@ -1,9 +1,7 @@
 {
-    "name": "WhiteArrow.SRPConfigurations.View",
-    "rootNamespace": "WhiteArrow.SRPConfigurations.View",
-    "references": [
-        "GUID:61af710d5d1724d65a571c2039926f4d"
-    ],
+    "name": "WhiteArrow.SRPConfigurations",
+    "rootNamespace": "WhiteArrow.SRPConfigurations",
+    "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

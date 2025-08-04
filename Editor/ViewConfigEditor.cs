@@ -22,7 +22,7 @@ namespace WhiteArrowEditor.SRPConfigurations
             var targetProp = serializedObject.FindProperty("_target");
             EditorGUILayout.PropertyField(targetProp);
 
-            var targetObject = targetProp.objectReferenceValue as CoreConfig;
+            var targetObject = targetProp.objectReferenceValue as ScriptableObject;
 
             if (targetObject == null)
             {
