@@ -1,6 +1,6 @@
-# SRPConfiguration
+# ViewConfigurations
 
-A lightweight Unity framework that enforces the Single Responsibility Principle by separating business and view data across distinct ScriptableObject assets.
+A Unity framework for cleanly separating view-related and business-related data using ScriptableObject-based configurations.
 
 ## Features
 
@@ -8,14 +8,13 @@ A lightweight Unity framework that enforces the Single Responsibility Principle 
 - Generic, type-safe mapping between configuration types  
 - Support for multiple view configs per business config  
 - Custom inspector for editing both configs from a single entry point  
-- Clean and maintainable architecture based on SOLID  
 
 ## Installing
 
 Use Unity Package Manager (UPM) with the following Git URL:
 
 ```
-https://github.com/CliffCalist/srp-configurations.git
+https://github.com/CliffCalist/view-configurations.git
 ```
 
 ## Usage
@@ -24,7 +23,7 @@ https://github.com/CliffCalist/srp-configurations.git
 
 ```csharp
 [CreateAssetMenu(menuName = "Config/My Game Config")]
-public class MyGameConfig : CoreConfig
+public class MyGameConfig : ScriptableObject
 {
     [SerializeField] private int baseScore;
     public int BaseScore => baseScore;
@@ -56,7 +55,7 @@ var viewConfig = registry.GetViewFor<MyGameViewConfig>(myGameConfig);
 
 ## Roadmap
 
-- [x] Base generic architecture: `CoreConfig` / `ViewConfig<T>`  
+- [x] Base generic architecture: `ScriptableObject` / `ViewConfig<T>`  
 - [x] Runtime registry for config mapping  
 - [x] Editor tooling  
   - [x] Custom inspector for ViewConfig  
