@@ -1,0 +1,11 @@
+{
+    "name": "com.white-arrow.urp-configurations",
+    "version": "1.0.0",
+    "displayName": "URP Configurations",
+    "description": "A lightweight Unity framework that enforces the Single Responsibility Principle by separating business and view data across distinct ScriptableObject assets.",
+    "licensesUrl": "https://github.com/CliffCalist/srp-configurations/blob/c3ac6381781ca31b03f40634518d43d44e1a9407/LICENSE",
+    "author": {
+        "name": "White Arrow",
+        "email": "cliffstersprog@gmail.com"
+    }
+}
