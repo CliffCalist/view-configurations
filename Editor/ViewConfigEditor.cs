@@ -16,13 +16,21 @@ namespace WhiteArrowEditor.SRPConfigurations
         {
             serializedObject.Update();
 
-            DrawPropertiesExcluding(serializedObject, "_target");
+            DrawPropertiesExcluding(serializedObject, "m_Script", "_target");
 
             // Draw _target field manually (we want more control over it)
             var targetProp = serializedObject.FindProperty("_target");
             EditorGUILayout.PropertyField(targetProp);
 
             var targetObject = targetProp.objectReferenceValue as ScriptableObject;
+
+            if (targetObject is ViewConfig)
+            {
+                EditorGUILayout.HelpBox("Cannot assign another ViewConfig as a target. This would create a circular reference.", MessageType.Error);
+                serializedObject.ApplyModifiedProperties();
+                return;
+            }
+
 
             if (targetObject == null)
             {
