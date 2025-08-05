@@ -6,7 +6,7 @@ namespace WhiteArrow.SRPConfigurations
 {
     public class ViewConfigRegistry : IViewConfigRegistry
     {
-        private readonly Dictionary<ScriptableObject, ViewConfig> _map = new();
+        private readonly Dictionary<ScriptableObject, List<ViewConfig>> _map = new();
 
 
 
@@ -17,7 +17,10 @@ namespace WhiteArrow.SRPConfigurations
                 if (config == null || config.TargetAsBase == null)
                     continue;
 
-                _map[config.TargetAsBase] = config;
+                if (_map.ContainsKey(config.TargetAsBase))
+                    _map[config.TargetAsBase].Add(config);
+                else
+                    _map.Add(config.TargetAsBase, new() { config });
             }
         }
 
@@ -26,22 +29,37 @@ namespace WhiteArrow.SRPConfigurations
         public TView GetViewFor<TView>(ScriptableObject config)
             where TView : ViewConfig
         {
-            if (_map.TryGetValue(config, out var result))
-                return result as TView;
-            throw new Exception($"UI config not found for {config.name}");
+            if (_map.TryGetValue(config, out var viewConfigs))
+            {
+                if (TryFindViewConfigByType<TView>(viewConfigs, out var result))
+                    return result;
+
+                throw new InvalidOperationException($"{typeof(ViewConfig).Name} of type {typeof(TView).Name} not found for {config.name}");
+            }
+            else throw new InvalidOperationException($"{nameof(ViewConfig)} not found for {config.name}");
         }
 
         public bool TryGetViewFor<TView>(ScriptableObject config, out TView uiConfig)
             where TView : ViewConfig
         {
-            if (_map.TryGetValue(config, out var result) && result is TView typed)
-            {
-                uiConfig = typed;
-                return true;
-            }
+            if (_map.TryGetValue(config, out var viewConfigs))
+                return TryFindViewConfigByType(viewConfigs, out uiConfig);
 
-            uiConfig = null;
+            uiConfig = default;
             return false;
+        }
+
+        private bool TryFindViewConfigByType<TView>(List<ViewConfig> viewConfigs, out TView viewConfig)
+            where TView : ViewConfig
+        {
+            var result = viewConfigs.Find(c => c is TView);
+
+            if (result != null)
+                viewConfig = result as TView;
+            else
+                viewConfig = default;
+
+            return result != null;
         }
     }
 }
