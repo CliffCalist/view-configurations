@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace WhiteArrow.SRPConfigurations
+namespace WhiteArrow.ViewConfigurations
 {
     public class ViewConfigRegistry : IViewConfigRegistry
     {

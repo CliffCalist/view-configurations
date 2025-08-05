@@ -1,8 +1,8 @@
 using UnityEditor;
 using UnityEngine;
-using WhiteArrow.SRPConfigurations;
+using WhiteArrow.ViewConfigurations;
 
-namespace WhiteArrowEditor.SRPConfigurations
+namespace WhiteArrowEditor.ViewConfigurations
 {
     [CustomEditor(typeof(ViewConfig), true)]
     public class ViewConfigEditor : Editor

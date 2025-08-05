@@ -1,6 +1,6 @@
 {
-    "name": "WhiteArrow.SRPConfigurations",
-    "rootNamespace": "WhiteArrow.SRPConfigurations",
+    "name": "WhiteArrow.ViewConfigurations",
+    "rootNamespace": "WhiteArrow.ViewConfigurations",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

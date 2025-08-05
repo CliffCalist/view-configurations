@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace WhiteArrow.SRPConfigurations
+namespace WhiteArrow.ViewConfigurations
 {
     public interface IViewConfigRegistry
     {

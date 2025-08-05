@@ -1,8 +1,7 @@
 {
-    "name": "WhiteArrowEditor.SRPConfigurations",
-    "rootNamespace": "WhiteArrowEditor.SRPConfigurations",
+    "name": "WhiteArrowEditor.ViewConfigurations",
+    "rootNamespace": "WhiteArrowEditor.ViewConfigurations",
     "references": [
-        "GUID:61af710d5d1724d65a571c2039926f4d",
         "GUID:08848b9afd860489498a155040013016"
     ],
     "includePlatforms": [],
