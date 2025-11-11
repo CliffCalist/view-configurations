@@ -9,7 +9,7 @@ namespace WhiteArrow.ViewConfigurations
         where TViewConfig : IndirectViewConfig<TTarget, TTargetProvider>
     {
         [SerializeField] private TTargetProvider _targetProvider;
-        [SerializeField] private List<TViewConfig> _configs;
+        [SerializeField] private List<TViewConfig> _configs = new();
 
 
 

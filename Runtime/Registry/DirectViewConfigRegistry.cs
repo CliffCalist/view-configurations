@@ -8,7 +8,7 @@ namespace WhiteArrow.ViewConfigurations
         where TTarget : ScriptableObject
         where TViewConfig : DirectViewConfig<TTarget>
     {
-        [SerializeField] private List<TViewConfig> _configs;
+        [SerializeField] private List<TViewConfig> _configs = new();
 
 
 
