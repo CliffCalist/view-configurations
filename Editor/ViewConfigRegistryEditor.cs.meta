@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 10d89f443f0834ed0b904dcf722deb12
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - _listXml: {fileID: 9197481963319205126, guid: 1ef6dc1e342a84fe08684a01f4abf8d2, type: 3}
+  - _elementXml: {fileID: 9197481963319205126, guid: 84099ef686d4646198e4bee4f153788f, type: 3}
+  - _elementActionButtonXml: {fileID: 9197481963319205126, guid: 283184d1df6524b8898ed25c14879e9c, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
