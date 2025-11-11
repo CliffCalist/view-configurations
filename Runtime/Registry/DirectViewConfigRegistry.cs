@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace WhiteArrow.ViewConfigurations
 {
-    public abstract class DirectViewConfigRegistry<TTarget, TViewConfig> : ViewConfigRegistry
+    public abstract class DirectViewConfigRegistry<TTarget, TViewConfig> : ViewConfigRegistry<TViewConfig>
         where TTarget : ScriptableObject
         where TViewConfig : DirectViewConfig<TTarget>
     {
@@ -12,8 +12,7 @@ namespace WhiteArrow.ViewConfigurations
 
 
 
-        public override sealed Type ConfigType => typeof(TViewConfig);
-        public override sealed IReadOnlyList<ViewConfig> Configs => _configs;
+        public override sealed IReadOnlyList<TViewConfig> Configs => _configs;
 
 
 

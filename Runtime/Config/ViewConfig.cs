@@ -4,16 +4,16 @@ namespace WhiteArrow.ViewConfigurations
 {
     public abstract class ViewConfig : ScriptableObject
     {
-        public abstract object TargetRaw { get; }
+        public abstract object BaseTarget { get; }
 
         public virtual string AssociatedName
         {
             get
             {
-                if (TargetRaw == null)
+                if (BaseTarget == null)
                     return "Target is null";
 
-                if (TargetRaw is Object unityObject)
+                if (BaseTarget is Object unityObject)
                     return unityObject.name;
 
                 return null;
@@ -23,7 +23,7 @@ namespace WhiteArrow.ViewConfigurations
 
     public abstract class ViewConfig<T> : ViewConfig
     {
-        public override sealed object TargetRaw => Target;
+        public override sealed object BaseTarget => Target;
         public abstract T Target { get; }
     }
 }

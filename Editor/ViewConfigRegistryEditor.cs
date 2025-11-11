@@ -40,7 +40,7 @@ namespace WhiteArrowEditor.ViewConfigurations
             };
 
             _list.SetItemsSource(
-                _registry.Configs,
+                _registry.BaseConfigs,
                 CreateConfig,
                 item => RemoveConfig(item as ViewConfig),
                 item => RenderConfig(item as ViewConfig)

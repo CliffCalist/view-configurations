@@ -49,7 +49,7 @@ namespace WhiteArrowEditor.ViewConfigurations
             var registry = target as ViewConfigRegistry;
             var targetProvider = _targetProviderProperty.objectReferenceValue;
 
-            foreach (var config in registry.Configs)
+            foreach (var config in registry.BaseConfigs)
             {
                 var configType = config.GetType();
                 var method = configType.GetMethod("SetTargetProvider", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);

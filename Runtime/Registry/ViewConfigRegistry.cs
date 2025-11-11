@@ -8,7 +8,7 @@ namespace WhiteArrow.ViewConfigurations
     public abstract class ViewConfigRegistry : ScriptableObject
     {
         public abstract Type ConfigType { get; }
-        public abstract IReadOnlyList<ViewConfig> Configs { get; }
+        public abstract IReadOnlyList<ViewConfig> BaseConfigs { get; }
 
 
 
@@ -20,7 +20,16 @@ namespace WhiteArrow.ViewConfigurations
 
         public ViewConfig GetConfigFor(object target)
         {
-            return Configs.FirstOrDefault(config => config.TargetRaw == target);
+            return BaseConfigs.FirstOrDefault(config => config.BaseTarget == target);
         }
+    }
+
+    public abstract class ViewConfigRegistry<TViewConfig> : ViewConfigRegistry
+        where TViewConfig : ViewConfig
+    {
+        public abstract IReadOnlyList<TViewConfig> Configs { get; }
+
+        public override sealed Type ConfigType => typeof(TViewConfig);
+        public override sealed IReadOnlyList<ViewConfig> BaseConfigs => Configs;
     }
 }
