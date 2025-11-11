@@ -20,7 +20,8 @@ namespace WhiteArrowEditor.ViewConfigurations
 
         private void OnDisable()
         {
-            EditorApplication.update -= _list.RefreshItemDisplayNames;
+            if (_list != null)
+                EditorApplication.update -= _list.RefreshItemDisplayNames;
         }
 
 
