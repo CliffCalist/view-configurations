@@ -88,9 +88,13 @@ namespace WhiteArrow.Configurations
                     continue;
 
                 var config = registry.GetBaseById(id);
-                if (config != null && config is TConfigAsset typedConfig)
+                if (config == null)
+                    continue;
+
+                if (config is TConfigAsset typedConfig)
                     return typedConfig;
-                else throw new InvalidOperationException($"Config with id '{id}' was found, but it is not assignable from {targetType}");
+
+                throw new InvalidOperationException($"Config with id '{id}' was found, but it is not assignable from {targetType}");
             }
 
             throw new InvalidOperationException($"Config with id '{id}' or type {targetType} was not found.");
