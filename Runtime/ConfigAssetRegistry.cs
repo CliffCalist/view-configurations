@@ -12,6 +12,7 @@ namespace WhiteArrow.Configurations
 
 
 
+        internal abstract bool HasConfig(ConfigAsset asset);
         internal abstract void AddConfig(ConfigAsset asset);
         internal abstract void RemoveConfig(ConfigAsset asset);
         internal abstract bool RemoveAllNullConfigs();
@@ -38,6 +39,11 @@ namespace WhiteArrow.Configurations
         public override sealed IReadOnlyList<ConfigAsset> BaseConfigs => Configs;
 
 
+
+        internal override sealed bool HasConfig(ConfigAsset asset)
+        {
+            return _configs.Contains(asset);
+        }
 
         internal override sealed void AddConfig(ConfigAsset asset)
         {
