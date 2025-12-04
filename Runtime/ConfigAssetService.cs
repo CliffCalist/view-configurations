@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace WhiteArrow.Configurations
 {
@@ -38,12 +39,35 @@ namespace WhiteArrow.Configurations
 
 
 
-        public static bool TryGetById<TConfigAsset>(string id, out TConfigAsset config)
+        public static bool TryGetRegistry<TRegistry>(out TRegistry registry)
+            where TRegistry : ConfigAssetRegistry
+        {
+            try
+            {
+                registry = GetRegistry<TRegistry>();
+                return true;
+            }
+            catch
+            {
+                registry = default;
+                return false;
+            }
+        }
+
+        public static TRegistry GetRegistry<TRegistry>()
+            where TRegistry : ConfigAssetRegistry
+        {
+            return s_registries.First(r => r is TRegistry) as TRegistry;
+        }
+
+
+
+        public static bool TryGetConfigById<TConfigAsset>(string id, out TConfigAsset config)
             where TConfigAsset : ConfigAsset
         {
             try
             {
-                config = GetById<TConfigAsset>(id);
+                config = GetConfigById<TConfigAsset>(id);
                 return true;
             }
             catch
@@ -53,7 +77,7 @@ namespace WhiteArrow.Configurations
             }
         }
 
-        public static TConfigAsset GetById<TConfigAsset>(string id)
+        public static TConfigAsset GetConfigById<TConfigAsset>(string id)
             where TConfigAsset : ConfigAsset
         {
             var targetType = typeof(TConfigAsset);
