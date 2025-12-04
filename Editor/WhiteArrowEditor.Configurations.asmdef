@@ -1,6 +1,6 @@
 {
-    "name": "WhiteArrowEditor.ViewConfigurations",
-    "rootNamespace": "WhiteArrowEditor.ViewConfigurations",
+    "name": "WhiteArrowEditor.Configurations",
+    "rootNamespace": "WhiteArrowEditor.Configurations",
     "references": [
         "GUID:684d234e2e6ba49a8a723d6e167e17ea",
         "GUID:08848b9afd860489498a155040013016"

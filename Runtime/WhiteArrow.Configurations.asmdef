@@ -1,6 +1,6 @@
 {
-    "name": "WhiteArrow.ViewConfigurations",
-    "rootNamespace": "WhiteArrow.ViewConfigurations",
+    "name": "WhiteArrow.Configurations",
+    "rootNamespace": "WhiteArrow.Configurations",
     "references": [],
     "includePlatforms": [],
     "excludePlatforms": [],

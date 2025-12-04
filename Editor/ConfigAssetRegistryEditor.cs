@@ -1,21 +1,20 @@
 using UnityEditor;
-using UnityEngine;
 using UnityEngine.UIElements;
-using WhiteArrow.ViewConfigurations;
+using WhiteArrow.Configurations;
 
-namespace WhiteArrowEditor.ViewConfigurations
+namespace WhiteArrowEditor.Configurations
 {
-    [CustomEditor(typeof(ViewConfigRegistry), true)]
-    public class ViewConfigRegistryEditor : Editor
+    [CustomEditor(typeof(ConfigAssetRegistry), true)]
+    public class ConfigAssetRegistryEditor : Editor
     {
-        protected ViewConfigRegistry _registry;
-        protected FlexList _list;
+        private ConfigAssetRegistry _registry;
+        private FlexList _list;
 
 
 
-        protected virtual void OnEnable()
+        private void OnEnable()
         {
-            _registry = (ViewConfigRegistry)target;
+            _registry = (ConfigAssetRegistry)target;
         }
 
         private void OnDisable()
@@ -30,6 +29,9 @@ namespace WhiteArrowEditor.ViewConfigurations
         {
             var root = new VisualElement();
 
+            if (_list != null)
+                EditorApplication.update -= _list.RefreshItemDisplayNames;
+
             _list = new();
             _list.Label.text = "View Configs";
 
@@ -42,37 +44,21 @@ namespace WhiteArrowEditor.ViewConfigurations
 
             _list.SetItemsSource(
                 _registry.BaseConfigs,
-                CreateConfig,
-                item => RemoveConfig(item as ViewConfig),
-                item => RenderConfig(item as ViewConfig)
+                new ConfigAssetCreator(_registry),
+                item => RemoveConfig(item as ConfigAsset),
+                item => RenderConfig(item as ConfigAsset)
             );
 
-            _list.GetItemName = item => GetConfigDisplayName(item as ViewConfig);
+            _list.GetItemName = item => GetConfigDisplayName(item as ConfigAsset);
 
             _list.Refresh();
             EditorApplication.update += _list.RefreshItemDisplayNames;
 
             root.Add(_list);
-
             return root;
         }
 
-        private void CreateConfig()
-        {
-            var instance = CreateInstance(_registry.ConfigType) as ViewConfig;
-            if (instance == null)
-                return;
-
-            Undo.RecordObject(_registry, "Add element");
-
-            instance.hideFlags = HideFlags.HideInHierarchy;
-            _registry.AddConfig(instance);
-
-            AssetDatabase.AddObjectToAsset(instance, _registry);
-            EditorUtility.SetDirty(_registry);
-        }
-
-        private void RemoveConfig(ViewConfig config)
+        private void RemoveConfig(ConfigAsset config)
         {
             Undo.RecordObject(_registry, "Remove view config");
 
@@ -83,12 +69,18 @@ namespace WhiteArrowEditor.ViewConfigurations
             EditorUtility.SetDirty(_registry);
         }
 
-        private string GetConfigDisplayName(ViewConfig config)
+        private string GetConfigDisplayName(ConfigAsset config)
         {
-            return config?.AssociatedName;
+            if (config == null)
+                return "Null Config Reference";
+
+            if (string.IsNullOrEmpty(config.Id))
+                return "Id not set";
+
+            return config.Id;
         }
 
-        private VisualElement RenderConfig(ViewConfig config)
+        private VisualElement RenderConfig(ConfigAsset config)
         {
             var moduleEditor = CreateEditor(config);
             var editorElement = new IMGUIContainer(() => moduleEditor.OnInspectorGUI());
