@@ -7,6 +7,11 @@ namespace WhiteArrow.Configurations
 {
     public abstract class ConfigAssetRegistry : ScriptableObject
     {
+        [SerializeField] private string _id;
+
+
+
+        public string Id => _id;
         public abstract Type ConfigType { get; }
         public abstract IReadOnlyList<ConfigAsset> BaseConfigs { get; }
 

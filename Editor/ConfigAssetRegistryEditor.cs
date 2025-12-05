@@ -31,6 +31,13 @@ namespace WhiteArrowEditor.Configurations
         {
             var root = new VisualElement();
 
+            var defaultInspector = new IMGUIContainer(() =>
+            {
+                DrawPropertiesExcluding(serializedObject, "m_Script", "_configs");
+            });
+            root.Add(defaultInspector);
+
+
             if (_list != null)
                 EditorApplication.update -= _list.RefreshItemDisplayNames;
 
