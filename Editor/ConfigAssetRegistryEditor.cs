@@ -34,6 +34,7 @@ namespace WhiteArrowEditor.Configurations
             var defaultInspector = new IMGUIContainer(() =>
             {
                 DrawPropertiesExcluding(serializedObject, "m_Script", "_configs");
+                serializedObject.ApplyModifiedProperties();
             });
             root.Add(defaultInspector);
 
