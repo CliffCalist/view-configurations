@@ -20,6 +20,15 @@ namespace WhiteArrow.Configurations
         }
 
         public string LocalId => _localId;
-        public string Id => $"{_contextId}/{_localId}";
+        public string Id
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_contextId))
+                    return _localId;
+
+                return $"{_contextId}/{_localId}";
+            }
+        }
     }
 }
