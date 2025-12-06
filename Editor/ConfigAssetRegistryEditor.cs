@@ -1,4 +1,4 @@
-using System.Linq;
+using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -11,6 +11,10 @@ namespace WhiteArrowEditor.Configurations
     {
         private ConfigAssetRegistry _registry;
         private FlexList _list;
+
+
+
+        public Type ConfigType => _registry.ConfigType;
 
 
 
@@ -34,7 +38,20 @@ namespace WhiteArrowEditor.Configurations
             var defaultInspector = new IMGUIContainer(() =>
             {
                 DrawPropertiesExcluding(serializedObject, "m_Script", "_configs");
+                var previousId = _registry.Id;
                 serializedObject.ApplyModifiedProperties();
+
+                if (_registry.Id != previousId)
+                {
+                    foreach (var config in _registry.BaseConfigs)
+                    {
+                        if (config != null && config.ContextId != _registry.Id)
+                        {
+                            config.ContextId = _registry.Id;
+                            EditorUtility.SetDirty(config);
+                        }
+                    }
+                }
             });
             root.Add(defaultInspector);
 
@@ -47,8 +64,8 @@ namespace WhiteArrowEditor.Configurations
 
             _list.SetItemsSource(
                 _registry.BaseConfigs,
-                new ConfigAssetCreator(_registry),
-                item => RemoveConfig(item as ConfigAsset),
+                new ConfigAssetCreator(this),
+                item => DestroyConfig(item as ConfigAsset),
                 item => RenderConfig(item as ConfigAsset)
             );
 
@@ -61,7 +78,7 @@ namespace WhiteArrowEditor.Configurations
 
             _list.GetItemName = item => GetConfigDisplayName(item as ConfigAsset);
 
-            _list.AddCustomHeaderElement(CreateDropZone());
+            _list.AddCustomHeaderElement(new ImportConfigsDropZone(this, _list));
 
             _list.Refresh();
             EditorApplication.update += _list.RefreshItemDisplayNames;
@@ -77,10 +94,10 @@ namespace WhiteArrowEditor.Configurations
             if (config == null)
                 return "Null Config Reference";
 
-            if (string.IsNullOrEmpty(config.Id))
+            if (string.IsNullOrEmpty(config.LocalId))
                 return "Id not set";
 
-            return config.Id;
+            return config.LocalId;
         }
 
         private VisualElement RenderConfig(ConfigAsset config)
@@ -92,120 +109,50 @@ namespace WhiteArrowEditor.Configurations
 
 
 
-        private void RemoveConfig(ConfigAsset config)
+        public void DestroyConfig(ConfigAsset config)
         {
-            Undo.RecordObject(_registry, "Remove view config");
-
-            _registry.RemoveConfig(config);
-            AssetDatabase.RemoveObjectFromAsset(config);
-
+            Undo.RecordObject(_registry, "Destroy view config");
+            RemoveConfig(config);
             DestroyImmediate(config, true);
             EditorUtility.SetDirty(_registry);
         }
 
-
-
-        private VisualElement CreateDropZone()
+        public void RemoveConfig(ConfigAsset config)
         {
-            var dropZone = CreateStyledDropZoneBox();
-            var label = CreateDropZoneLabel();
-            dropZone.Add(label);
-            RegisterDropZoneEvents(dropZone);
-            return dropZone;
+            Undo.RecordObject(_registry, "Remove view config");
+            _registry.RemoveConfig(config);
+            AssetDatabase.RemoveObjectFromAsset(config);
+            EditorUtility.SetDirty(_registry);
+
+            config.ContextId = string.Empty;
+            config.hideFlags = HideFlags.None;
+            EditorUtility.SetDirty(config);
         }
 
-        private Box CreateStyledDropZoneBox()
+        public void CreateConfig(Type type)
         {
-            var dropZone = new Box();
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
 
-            dropZone.style.paddingLeft = 2;
-            dropZone.style.paddingRight = 2;
+            if (!typeof(ConfigAsset).IsAssignableFrom(type))
+                throw new ArgumentException($"Type {type} is not assignable from {nameof(ConfigAsset)}");
 
-            dropZone.style.borderLeftWidth = 1;
-            dropZone.style.borderRightWidth = 1;
-            dropZone.style.borderTopWidth = 1;
-            dropZone.style.borderBottomWidth = 1;
+            var instance = CreateInstance(type) as ConfigAsset;
+            if (instance == null)
+                return;
 
-            var borderColor = new Color(0.1882353F, 0.1882353F, 0.1882353F, 0.1882353F);
-            dropZone.style.borderLeftColor = borderColor;
-            dropZone.style.borderRightColor = borderColor;
-            dropZone.style.borderTopColor = borderColor;
-            dropZone.style.borderBottomColor = new Color(0.1411765F, 0.1411765F, 0.1411765F, 0.1411765F);
-
-            dropZone.style.borderTopLeftRadius = 3;
-            dropZone.style.borderTopRightRadius = 3;
-            dropZone.style.borderBottomLeftRadius = 3;
-            dropZone.style.borderBottomRightRadius = 3;
-
-            dropZone.style.alignItems = Align.Center;
-            dropZone.style.justifyContent = Justify.Center;
-            dropZone.style.flexDirection = FlexDirection.Row;
-
-            return dropZone;
+            Undo.RecordObject(_registry, "Create config");
+            AddConfig(instance);
         }
 
-        private Label CreateDropZoneLabel()
+        public void AddConfig(ConfigAsset config)
         {
-            var label = new Label("Import area");
-            label.style.flexGrow = 1;
-            return label;
-        }
-
-        private void RegisterDropZoneEvents(Box dropZone)
-        {
-            dropZone.RegisterCallback<DragUpdatedEvent>(evt =>
-            {
-                DragAndDrop.visualMode = IsValidDrop(DragAndDrop.objectReferences)
-                    ? DragAndDropVisualMode.Copy
-                    : DragAndDropVisualMode.Rejected;
-            });
-
-            dropZone.RegisterCallback<DragPerformEvent>(evt =>
-            {
-                if (!IsValidDrop(DragAndDrop.objectReferences)) return;
-
-                Undo.RecordObject(_registry, "Import ConfigAssets");
-                bool changed = false;
-
-                foreach (var obj in DragAndDrop.objectReferences)
-                {
-                    if (obj is not ConfigAsset config)
-                        continue;
-
-                    if (_registry.HasConfig(config))
-                        continue;
-
-                    var path = AssetDatabase.GetAssetPath(config);
-                    if (string.IsNullOrEmpty(path))
-                        continue;
-
-                    var copy = Instantiate(config);
-                    copy.name = config.name;
-                    copy.hideFlags = HideFlags.HideInHierarchy;
-
-                    _registry.AddConfig(copy);
-                    AssetDatabase.AddObjectToAsset(copy, _registry);
-                    AssetDatabase.MoveAssetToTrash(path);
-
-                    changed = true;
-                }
-
-                if (changed)
-                {
-                    EditorUtility.SetDirty(_registry);
-                    AssetDatabase.Refresh();
-                    _list.Refresh();
-                }
-
-                DragAndDrop.AcceptDrag();
-            });
-        }
-
-        private bool IsValidDrop(Object[] objects)
-        {
-            return objects.All(obj =>
-                obj is ConfigAsset config &&
-                !string.IsNullOrEmpty(AssetDatabase.GetAssetPath(config)));
+            Undo.RecordObject(_registry, "Add config");
+            config.ContextId = _registry.Id;
+            config.hideFlags = HideFlags.HideInHierarchy;
+            _registry.AddConfig(config);
+            AssetDatabase.AddObjectToAsset(config, _registry);
+            EditorUtility.SetDirty(_registry);
         }
     }
 }

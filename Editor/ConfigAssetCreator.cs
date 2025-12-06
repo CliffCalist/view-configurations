@@ -8,13 +8,13 @@ namespace WhiteArrowEditor.Configurations
 {
     internal class ConfigAssetCreator : IFlexItemCreator
     {
-        private readonly ConfigAssetRegistry _registry;
+        private readonly ConfigAssetRegistryEditor _registryEditor;
 
 
 
-        public ConfigAssetCreator(ConfigAssetRegistry registry)
+        public ConfigAssetCreator(ConfigAssetRegistryEditor registry)
         {
-            _registry = registry ?? throw new ArgumentNullException(nameof(registry));
+            _registryEditor = registry ?? throw new ArgumentNullException(nameof(registry));
         }
 
 
@@ -31,7 +31,7 @@ namespace WhiteArrowEditor.Configurations
 
             if (configTypes.Count == 1)
             {
-                CreateAndSetConfig(configTypes[0]);
+                _registryEditor.CreateConfig(configTypes[0]);
                 onComplete(true);
             }
             else ShowGenericMenu(configTypes, onComplete);
@@ -45,7 +45,7 @@ namespace WhiteArrowEditor.Configurations
                 menu.AddItem(
                     new GUIContent(type.Name), false, () =>
                     {
-                        CreateAndSetConfig(type);
+                        _registryEditor.CreateConfig(type);
                         onComplete(true);
                     }
                 );
@@ -54,30 +54,9 @@ namespace WhiteArrowEditor.Configurations
             menu.ShowAsContext();
         }
 
-        private void CreateAndSetConfig(Type type)
-        {
-            if (type == null)
-                throw new ArgumentNullException(nameof(type));
-
-            if (!typeof(ConfigAsset).IsAssignableFrom(type))
-                throw new ArgumentException($"Type {type} is not assignable from {nameof(ConfigAsset)}");
-
-            var instance = ScriptableObject.CreateInstance(type) as ConfigAsset;
-            if (instance == null)
-                return;
-
-            Undo.RecordObject(_registry, "Add element");
-
-            instance.hideFlags = HideFlags.HideInHierarchy;
-            _registry.AddConfig(instance);
-
-            AssetDatabase.AddObjectToAsset(instance, _registry);
-            EditorUtility.SetDirty(_registry);
-        }
-
         private List<Type> GetDerivedConfigTypes()
         {
-            var baseType = _registry.ConfigType;
+            var baseType = _registryEditor.ConfigType;
             var types = TypeCache.GetTypesDerivedFrom(baseType);
             var validTypes = new List<Type>();
 
