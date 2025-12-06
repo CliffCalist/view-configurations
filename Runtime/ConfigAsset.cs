@@ -27,7 +27,7 @@ namespace WhiteArrow.Configurations
                 if (string.IsNullOrEmpty(_contextId))
                     return _localId;
 
-                return $"{_contextId}/{_localId}";
+                return $"{_contextId}__{_localId}";
             }
         }
     }
