@@ -88,7 +88,7 @@ namespace WhiteArrow.Configurations
 
             foreach (var registry in s_registries)
             {
-                if (!targetType.IsAssignableFrom(registry.ConfigType))
+                if (!registry.ConfigType.IsAssignableFrom(targetType))
                     continue;
 
                 var configBase = registry.GetBaseById(id);
