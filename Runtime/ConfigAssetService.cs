@@ -1,15 +1,38 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace WhiteArrow.Configurations
 {
     public static class ConfigAssetService
     {
+        private static readonly HashSet<ScriptableObject> s_singletonInstances = new();
         private static readonly HashSet<ConfigAssetRegistry> s_registries = new();
 
 
 
+        #region  Singleton
+        public static void AddSingletonRange(IEnumerable<ScriptableObject> instances)
+        {
+            s_singletonInstances.UnionWith(instances);
+        }
+
+        public static void RemoveSingletonRange(IEnumerable<ScriptableObject> instances)
+        {
+            s_singletonInstances.ExceptWith(instances);
+        }
+
+        public static T GetSingleton<T>()
+            where T : ScriptableObject
+        {
+            return s_singletonInstances.First(s => s is T) as T;
+        }
+        #endregion
+
+
+
+        #region Registry
         public static void AddRegistry(ConfigAssetRegistry registry)
         {
             s_registries.Add(registry);
@@ -119,5 +142,6 @@ namespace WhiteArrow.Configurations
                 return config;
             else throw new InvalidOperationException($"Config with id '{id}' was not found or is not assignable from {typeof(TConfigAsset)}.");
         }
+        #endregion
     }
 }
